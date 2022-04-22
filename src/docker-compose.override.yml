@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  sqldata:
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 5306:3306
+    volumes:
+      - spacea-mysqldata:/var/lib/mysql
+
+  spacea-api:
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionStrings__DefaultConnection=${SPACEA_DB:-Server=sqldata;UserId=root;Password=root;Database=spacea}
+    ports:
+      - 5000:80
+
+volumes:
+  spacea-mysqldata:
+    external: false

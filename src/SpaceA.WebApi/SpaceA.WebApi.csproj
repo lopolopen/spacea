@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <!-- <PreserveCompilationContext>false</PreserveCompilationContext> -->
+    <UserSecretsId>a70079a4-ff4a-4d2a-94a9-a196a862f0fe</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>   
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Reposities\**" />
+    <Content Remove="Reposities\**" />
+    <EmbeddedResource Remove="Reposities\**" />
+    <None Remove="Reposities\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+    <PackageReference Include="Minio" Version="3.1.13" />
+    <PackageReference Include="Novell.Directory.Ldap.NETStandard" Version="2.3.8" />
+    <PackageReference Include="Polly" Version="7.2.3" />
+    <PackageReference Include="Quartz" Version="3.0.7" />
+    <PackageReference Include="RestSharp" Version="106.10.1" />
+    <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="106.10.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SpaceA.Model\SpaceA.Model.csproj" />
+    <ProjectReference Include="..\SpaceA.Repository\SpaceA.Repository.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\SpaceA.Common\SpaceA.Common.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Filters\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Reposities\" />
+    <None Remove="Exceptions\" />
+    <None Remove="Filters\" />
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+</Project>

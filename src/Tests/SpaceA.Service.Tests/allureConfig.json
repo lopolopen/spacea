@@ -1,0 +1,7 @@
+{
+  "directory": "allure-results",
+  "links": [
+    "{link}",
+    "http://[host]/projects/2/workitems/#{issue}"
+  ]
+}

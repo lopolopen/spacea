@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  sqldata:
+    image: mariadb:latest
+    
+  spacea-api:
+    image: ${REGISTRY:-lopolopen}/spacea.api:${TAG:-dev}
+    build:
+      context: .
+      dockerfile: SpaceA.WebApi/Dockerfile
+    depends_on:
+      - sqldata

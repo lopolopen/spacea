@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-SpaceA.Service-4C3AA165-85B6-4E5D-A2A1-CA56BE3961E9</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.18" />
+    <PackageReference Include="Novell.Directory.Ldap.NETStandard" Version="2.3.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpaceA.Repository\SpaceA.Repository.csproj" />
+  </ItemGroup>
+</Project>
