@@ -18,11 +18,8 @@ namespace SpaceA.WebApi.Controllers
 {
     using SpaceA.Repository.Context;
     using SpaceA.Common;
-    using SpaceA.WebApi.Options;
     using SpaceA.WebApi.Services;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Minio;
     using Minio.Exceptions;
 
     [Route("api/[controller]")]
@@ -94,7 +91,7 @@ namespace SpaceA.WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> CreateProjectAsync(DTO.Project projectDTO)
+        public async Task<IActionResult> CreateProjectAsync(DTO.Project projectDTO, string local = default)
         {
             var member = _me.Value;
             var now = DateTime.Now;
@@ -235,10 +232,13 @@ namespace SpaceA.WebApi.Controllers
             var project = await _projectRepository.GetProjectDetail(id);
             var teamIds = project.Teams.Select(t => t.Id).ToArray();
             var memberMap = await _teamRepository.GetMemberMap(teamIds);
+
             var allFolders = await _folderRepository.GetFoldersAsync(id);
-            var folderMap = await _folderRepository.GetFolderMapAsync(teamIds);
             var allIterations = await _iterationRepository.GetIterationsAsync(id);
+
+            var folderIdMap = await _folderRepository.GetFolderIdMapAsync(teamIds);
             var iterationIdMap = await _iterationRepository.GetIterationIdMapAsync(teamIds);
+
             var projectDTO = new DTO.Project
             {
                 Id = project.Id,
@@ -253,9 +253,8 @@ namespace SpaceA.WebApi.Controllers
                 Teams = project.Teams.Select(t =>
                 {
                     memberMap.TryGetValue(t.Id, out var members);
-                    folderMap.TryGetValue(t.Id, out var folders);
+                    folderIdMap.TryGetValue(t.Id, out var folderIds);
                     iterationIdMap.TryGetValue(t.Id, out var iterationIds);
-                    // iterationMap.TryGetValue(t.Id, out var iterations);
                     return new DTO.Team
                     {
                         Id = t.Id,
@@ -263,31 +262,14 @@ namespace SpaceA.WebApi.Controllers
                         Acronym = t.Acronym,
                         Description = t.Description,
                         DefaultFolder = t.DefaultFolder?.ToDto(),
-                        Folders = folders?.Select(f =>
-                        new DTO.Folder
-                        {
-                            Id = f.Id,
-                            Name = f.Name,
-                            Path = f.Path
-                        })
-                        .ToList(),
                         DefaultIteration = t.DefaultIteration?.ToDto(),
+                        FolderIds = folderIds,
                         IterationIds = iterationIds,
-                        Members = members?.Select(m => m.ToDto())
-                        .ToList() ?? new List<DTO.Member>()
+                        Members = members?.Select(m => m.ToDto()).ToList() ?? new List<DTO.Member>()
                     };
-                })
-                .ToList(),
-                Folders = allFolders.Select(f =>
-                new DTO.Folder
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    Path = f.Path
-                })
-                .ToList(),
-                Iterations = allIterations?.Select(i => i.ToDto())
-                .ToList() ?? new List<DTO.Iteration>()
+                }).ToList(),
+                Folders = allFolders?.Select(f => f.ToDto()).ToList() ?? new List<DTO.Folder>(),
+                Iterations = allIterations?.Select(i => i.ToDto()).ToList() ?? new List<DTO.Iteration>()
             };
             return Ok(projectDTO);
         }

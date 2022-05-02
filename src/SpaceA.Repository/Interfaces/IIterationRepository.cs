@@ -11,7 +11,7 @@ namespace SpaceA.Repository.Interfaces
 
         Task<IList<Iteration>> GetIterationsOfTeamAsync(uint teamId);
 
-        Task<Dictionary<uint, List<Iteration>>> GetIterationMapAsync(params uint[] teamIds);
+        //Task<Dictionary<uint, List<Iteration>>> GetIterationMapAsync(params uint[] teamIds);
 
         Task<Dictionary<uint, List<uint>>> GetIterationIdMapAsync(params uint[] teamIds);
 

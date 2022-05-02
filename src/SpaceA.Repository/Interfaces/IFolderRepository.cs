@@ -9,7 +9,9 @@ namespace SpaceA.Repository.Interfaces
     {
         Task<IList<Folder>> GetFoldersAsync(uint projectId);
 
-        Task<Dictionary<uint, List<Folder>>> GetFolderMapAsync(params uint[] teamIds);
+        //Task<Dictionary<uint, List<Folder>>> GetFolderMapAsync(params uint[] teamIds);
+
+        Task<Dictionary<uint, List<uint>>> GetFolderIdMapAsync(params uint[] teamIds);
 
         Task TransferAsync(uint projectId, string fromPath, uint toId, uint changerId);
 
