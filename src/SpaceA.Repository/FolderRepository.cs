@@ -24,7 +24,25 @@ namespace SpaceA.Repository
             .ToListAsync();
         }
 
-        public async Task<Dictionary<uint, List<Folder>>> GetFolderMapAsync(params uint[] teamIds)
+        //public async Task<Dictionary<uint, List<Folder>>> GetFolderMapAsync(params uint[] teamIds)
+        //{
+        //    var xs = await _context.TeamFolders
+        //    .Where(tf => teamIds.Contains(tf.Id1))
+        //    .Include(tf => tf.Folder)
+        //    .Select(tf => new
+        //    {
+        //        TeamId = tf.Id1,
+        //        tf.Folder
+        //    })
+        //    .ToListAsync();
+        //    return xs.GroupBy(x => x.TeamId)
+        //    .ToDictionary(
+        //        g => g.Key,
+        //        g => g?.Select(x => x.Folder).ToList()
+        //    );
+        //}
+
+        public async Task<Dictionary<uint, List<uint>>> GetFolderIdMapAsync(params uint[] teamIds)
         {
             var xs = await _context.TeamFolders
             .Where(tf => teamIds.Contains(tf.Id1))
@@ -32,13 +50,13 @@ namespace SpaceA.Repository
             .Select(tf => new
             {
                 TeamId = tf.Id1,
-                tf.Folder
+                FolderId = tf.Id2
             })
             .ToListAsync();
             return xs.GroupBy(x => x.TeamId)
             .ToDictionary(
                 g => g.Key,
-                g => g?.Select(x => x.Folder).ToList()
+                g => g?.Select(x => x.FolderId).ToList()
             );
         }
 

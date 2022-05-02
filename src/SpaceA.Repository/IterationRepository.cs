@@ -33,23 +33,23 @@ namespace SpaceA.Repository
             .ToListAsync();
         }
 
-        public async Task<Dictionary<uint, List<Iteration>>> GetIterationMapAsync(params uint[] teamIds)
-        {
-            var xs = await _context.TeamIterations
-            .Where(ti => teamIds.Contains(ti.Id1))
-            .Include(ti => ti.Iteration)
-            .Select(ti => new
-            {
-                TeamId = ti.Id1,
-                ti.Iteration
-            })
-            .ToListAsync();
-            return xs.GroupBy(x => x.TeamId)
-            .ToDictionary(
-                g => g.Key,
-                g => g?.Select(x => x.Iteration).ToList()
-            );
-        }
+        //public async Task<Dictionary<uint, List<Iteration>>> GetIterationMapAsync(params uint[] teamIds)
+        //{
+        //    var xs = await _context.TeamIterations
+        //    .Where(ti => teamIds.Contains(ti.Id1))
+        //    .Include(ti => ti.Iteration)
+        //    .Select(ti => new
+        //    {
+        //        TeamId = ti.Id1,
+        //        ti.Iteration
+        //    })
+        //    .ToListAsync();
+        //    return xs.GroupBy(x => x.TeamId)
+        //    .ToDictionary(
+        //        g => g.Key,
+        //        g => g?.Select(x => x.Iteration).ToList()
+        //    );
+        //}
 
         public async Task<Dictionary<uint, List<uint>>> GetIterationIdMapAsync(params uint[] teamIds)
         {

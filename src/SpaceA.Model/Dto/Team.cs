@@ -17,7 +17,7 @@ namespace SpaceA.Model.Dto
 
         public List<Member> Members { get; set; }
         
-        public List<Folder> Folders { get; set; }
+        public List<uint> FolderIds { get; set; }
 
         public List<uint> IterationIds { get; set; }
 

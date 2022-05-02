@@ -116,7 +116,7 @@ namespace SpaceA.WebApi.Controllers
             var stream = await _contentService.DownloadAsync(filePath);
             var fileProvider = new FileExtensionContentTypeProvider();
             fileProvider.TryGetContentType(fileName, out var contentType);
-            return new FileStreamResult(stream, "application/octet-stream");
+            return new FileStreamResult(stream, contentType);
         }
 
         [HttpPut("{id}/attachto/{workItemId}")]
