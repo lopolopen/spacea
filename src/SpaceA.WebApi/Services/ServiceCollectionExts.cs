@@ -23,7 +23,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<IOrderService, OrderService>()
                 .AddSingleton<ITokenService, TokenService>()
                 .AddSingleton<ICipherService, CipherService>()
-                .AddSingleton<ILdapService, LdapService>();
+                .AddSingleton<ILdapService, LdapService>()
+                .AddSingleton<IContentService, MinioService>();
         }
     }
 }

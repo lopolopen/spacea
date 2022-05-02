@@ -20,7 +20,7 @@ namespace SpaceA.Model.Entities
 
         public uint? AssigneeId { get; set; }
 
-        public string Desc { get; set; }
+        public string Description { get; set; }
 
         public string AcceptCriteria { get; set; }
 

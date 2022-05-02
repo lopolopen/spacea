@@ -19,7 +19,7 @@ namespace SpaceA.Model.Entities
         [StringLength(128)]
         public string Title { get; set; }
         public uint? AssigneeId { get; set; }
-        public string Desc { get; set; }
+        public string Description { get; set; }
         public string AcceptCriteria { get; set; }
         public string ReproSteps { get; set; }
         [Required]

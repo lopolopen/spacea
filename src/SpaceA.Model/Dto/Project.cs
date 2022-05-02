@@ -7,7 +7,7 @@ namespace SpaceA.Model.Dto
     {
         public uint Id { get; set; }
         public string Name { get; set; }
-        public string Desc { get; set; }
+        public string Description { get; set; }
         public string AvatarUrl => string.IsNullOrEmpty(AvatarUid) ? null : $"projects/{Id}/avatar";
         public string AvatarUid { get; set; }
         public DateTime CreatedDate { get; set; }

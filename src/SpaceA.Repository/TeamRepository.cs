@@ -233,7 +233,7 @@ namespace SpaceA.Repository
             .Property(t => t.Acronym)
             .IsModified = true;
             _context.Entry(team)
-            .Property(t => t.Desc)
+            .Property(t => t.Description)
             .IsModified = true;
         }
 

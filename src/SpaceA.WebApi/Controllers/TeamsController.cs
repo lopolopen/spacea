@@ -53,7 +53,7 @@ namespace SpaceA.WebApi.Controllers
                 Id = id,
                 Name = teamDTO.Name,
                 Acronym = teamDTO.Acronym,
-                Desc = teamDTO.Desc
+                Description = teamDTO.Description
             };
             _teamRepository.UpdateTeam(team);
             if (teamDTO.MemberIds != null)

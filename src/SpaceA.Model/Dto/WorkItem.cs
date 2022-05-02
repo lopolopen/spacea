@@ -9,7 +9,7 @@ namespace SpaceA.Model.Dto
         public int Rev { get; set; }
         public WorkItemType Type { get; set; }
         public string Title { get; set; }
-        public string Desc { get; set; }
+        public string Description { get; set; }
         public string AcceptCriteria { get; set; }
         public string ReproSteps { get; set; }
         public WorkItemPriority Priority { get; set; }

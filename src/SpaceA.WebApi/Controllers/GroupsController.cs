@@ -45,7 +45,7 @@ namespace SpaceA.WebApi.Controllers
                 {
                     Id = id,
                     Name = groupDTO.Name,
-                    Desc = groupDTO.Desc,
+                    Description = groupDTO.Description,
                     Acronym = groupDTO.Acronym,
                     Disabled = false
                 };
@@ -92,7 +92,7 @@ namespace SpaceA.WebApi.Controllers
                     AccountName = g.AccountName,
                     Name = g.Name,
                     Acronym = g.Acronym,
-                    Desc = g.Desc,
+                    Description = g.Description,
                     Disabled = g.Disabled,
                     LeaderId = g.LeaderId,
                     Members = members?.Select(m => m.ToDto())
@@ -124,7 +124,7 @@ namespace SpaceA.WebApi.Controllers
                 Id = groups.Id,
                 AccountName = groups.AccountName,
                 Name = groups.Name,
-                Desc = groups.Desc,
+                Description = groups.Description,
                 LeaderId = groups.LeaderId,
                 Members = members.Select(m => m.ToDto())
                 .ToList()

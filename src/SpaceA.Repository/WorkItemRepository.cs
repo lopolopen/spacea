@@ -50,7 +50,7 @@ namespace SpaceA.Repository
             .Select(wi => new WorkItem
             {
                 Id = wi.Id,
-                Desc = wi.Desc,
+                Description = wi.Description,
                 AcceptCriteria = wi.AcceptCriteria,
                 ReproSteps = wi.ReproSteps,
                 Attachments = wi.Attachments

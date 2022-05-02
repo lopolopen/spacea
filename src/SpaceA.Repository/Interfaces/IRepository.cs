@@ -13,6 +13,7 @@ namespace SpaceA.Repository.Interfaces
         DbSet<TEntity> DbSet { get; }
 
         Task<IList<TEntity>> GetAllAsync();
+
         void Add(TEntity entity);
 
         void AddRange(IList<TEntity> entities);

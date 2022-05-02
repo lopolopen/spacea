@@ -42,8 +42,8 @@ namespace SpaceA.WebApi.Controllers
         private readonly IRepoRepository _repoRepository;
         private readonly IOrderService _orderService;
         private readonly ICipherService _cipherService;
+        private readonly IContentService _contentService;
         private readonly Lazy<Member> _me;
-        private readonly MinioOptions _minioOptions;
 
         public ProjectsController(
             IConfiguration configuration,
@@ -60,7 +60,7 @@ namespace SpaceA.WebApi.Controllers
             IRepoRepository repoRepository,
             IOrderService orderService,
             ICipherService cipherService,
-            IOptions<MinioOptions> minioOptions)
+            IContentService contentService)
         {
             Configuration = configuration;
             _context = context;
@@ -75,8 +75,8 @@ namespace SpaceA.WebApi.Controllers
             _repoRepository = repoRepository;
             _orderService = orderService;
             _cipherService = cipherService;
+            _contentService = contentService;
             _me = new Lazy<Member>(() => tokenService.GetMember(User));
-            _minioOptions = minioOptions.Value;
         }
 
         [HttpGet("names")]
@@ -102,7 +102,7 @@ namespace SpaceA.WebApi.Controllers
             {
                 OwnerId = member.Id,
                 Name = projectDTO.Name,
-                Desc = projectDTO.Desc,
+                Description = projectDTO.Description,
                 AvatarUid = projectDTO.AvatarUid,
                 CreatedDate = now,
                 ChangedDate = now,
@@ -157,7 +157,7 @@ namespace SpaceA.WebApi.Controllers
                     {
                         ProjectId = project.Id,
                         Name = project.Name,
-                        Desc = $"项目{project.Name}的默认团队",
+                        Description = $"项目{project.Name}的默认团队",
                         DefaultFolderId = folder.Id,
                         DefaultIterationId = iteration.Id
                     };
@@ -175,7 +175,7 @@ namespace SpaceA.WebApi.Controllers
                         {
                             Id = team.Id,
                             Name = team.Name,
-                            Desc = team.Desc
+                            Description = team.Description
                         }
                     };
                     projectDTO.Owner = me.ToDto();
@@ -207,7 +207,7 @@ namespace SpaceA.WebApi.Controllers
             {
                 Id = p.Id,
                 Name = p.Name,
-                Desc = p.Desc,
+                Description = p.Description,
                 AvatarUid = p.AvatarUid,
                 CreatedDate = p.CreatedDate,
                 Owner = p.Owner.ToDto(),
@@ -243,7 +243,7 @@ namespace SpaceA.WebApi.Controllers
             {
                 Id = project.Id,
                 Name = project.Name,
-                Desc = project.Desc,
+                Description = project.Description,
                 AvatarUid = project.AvatarUid,
                 CreatedDate = project.CreatedDate,
                 Owner = project.Owner.ToDto(),
@@ -261,7 +261,7 @@ namespace SpaceA.WebApi.Controllers
                         Id = t.Id,
                         Name = t.Name,
                         Acronym = t.Acronym,
-                        Desc = t.Desc,
+                        Description = t.Description,
                         DefaultFolder = t.DefaultFolder?.ToDto(),
                         Folders = folders?.Select(f =>
                         new DTO.Folder
@@ -332,7 +332,7 @@ namespace SpaceA.WebApi.Controllers
                             {
                                 Rev = p.Rev + 1,
                                 Name = projectDTO.Name,
-                                Desc = projectDTO.Desc,
+                                Description = projectDTO.Description,
                                 ChangedDate = now,
                                 ChangerId = member.Id,
                             }
@@ -371,13 +371,10 @@ namespace SpaceA.WebApi.Controllers
                         .Property(p => p.AvatarUid)
                         .IsModified = true;
                     await _context.SaveChangesAsync();
-                    var opt = _minioOptions;
-                    var bucket = opt.AccessKey;
                     var filePath = $"public/projects/{id}/avatar";
-                    var minio = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
                     using (var stream = file.OpenReadStream())
                     {
-                        await minio.PutObjectAsync(bucket, filePath, stream, file.Length, file.ContentType);
+                        await _contentService.UploadAsync(file, filePath);
                     }
                     await trans.CommitAsync();
                 }
@@ -413,13 +410,10 @@ namespace SpaceA.WebApi.Controllers
                 .Property(p => p.AvatarUid)
                 .IsModified = true;
             await _context.SaveChangesAsync();
-            var opt = _minioOptions;
-            var bucket = opt.AccessKey;
             var filePath = $"public/projects/{id}/avatar";
-            var minio = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
             try
             {
-                await minio.RemoveObjectAsync(bucket, filePath);
+                await _contentService.RemoveAsync(filePath);
             }
             catch (MinioException ex)
             {
@@ -707,7 +701,7 @@ namespace SpaceA.WebApi.Controllers
                         ProjectId = id,
                         Name = teamDTO.Name,
                         Acronym = teamDTO.Acronym,
-                        Desc = teamDTO.Desc,
+                        Description = teamDTO.Description,
                         DefaultFolderId = folder.Id,
                         DefaultIterationId = project.RootIterationId,
                     };

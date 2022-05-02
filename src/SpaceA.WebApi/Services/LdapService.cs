@@ -8,28 +8,29 @@ using SpaceA.Model.Entities;
 using SpaceA.WebApi.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Novell.Directory.Ldap;
+using SpaceA.WebApi.Options;
 
 namespace SpaceA.WebApi.Services
 {
     public class LdapService : ILdapService
     {
         // private readonly IConfiguration _configuration;
-        private readonly LdapConfig _adConfig;
+        private readonly LdapOptions _ldapOptions;
 
         public LdapService(IConfiguration configuration)
         {
             // _configuration = configuration;
-            _adConfig = configuration.GetSection("Ldap").Get<LdapConfig>();
+            _ldapOptions = configuration.GetSection("Ldap").Get<LdapOptions>();
         }
 
         public Member GetMember(string accountName)
         {
             using (var cn = new LdapConnection())
             {
-                cn.Connect(_adConfig.Host, _adConfig.Port);
-                cn.Bind(_adConfig.BindDn, _adConfig.BindPassword);
+                cn.Connect(_ldapOptions.Host, _ldapOptions.Port);
+                cn.Bind(_ldapOptions.BindDn, _ldapOptions.BindPassword);
                 var lsc = cn.Search(
-                    _adConfig.BindBase,
+                    _ldapOptions.BindBase,
                     LdapConnection.SCOPE_SUB,
                     $"sAMAccountName={accountName}",
                     new[] { "cn" },
@@ -50,7 +51,7 @@ namespace SpaceA.WebApi.Services
                 }
                 if (commonName == null)
                 {
-                    throw new Exception($"Can not find {accountName} in {_adConfig.BindBase}");
+                    throw new Exception($"Can not find {accountName} in {_ldapOptions.BindBase}");
                 }
                 var nameArr = commonName.Split(" ");
                 string firstName = nameArr[0];
@@ -75,7 +76,7 @@ namespace SpaceA.WebApi.Services
             {
                 try
                 {
-                    cn.Connect(_adConfig.Host, _adConfig.Port);
+                    cn.Connect(_ldapOptions.Host, _ldapOptions.Port);
                     cn.Bind($@"CORP\{accountName}", password);
                     return true;
                 }
@@ -98,17 +99,5 @@ namespace SpaceA.WebApi.Services
         private static bool EqualsIgnoreCase(string x, string y) => string.Compare(x, y, StringComparison.OrdinalIgnoreCase) == 0;
     }
 
-    class LdapConfig
-    {
-        public string Host { get; set; }
-        public int Port { get; set; }
 
-        public string BindDn { get; set; }
-
-        public string BindPassword { get; set; }
-
-        public string GroupsBindBase { get; set; }
-
-        public string BindBase { get; set; }
-    }
 }

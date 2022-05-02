@@ -15,7 +15,7 @@ namespace SpaceA.Model.Entities
         [StringLength(4)]
         public string Acronym { get; set; }
         [StringLength(256)]
-        public string Desc { get; set; }
+        public string Description { get; set; }
         public uint ProjectId { get; set; }
         public uint? DefaultFolderId { get; set; }
         public uint? DefaultIterationId { get; set; }

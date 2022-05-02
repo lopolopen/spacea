@@ -127,7 +127,7 @@ namespace SpaceA.Repository
         {
             _context.Attach(project);
             _context.Entry(project).Property(p => p.Name).IsModified = true;
-            _context.Entry(project).Property(p => p.Desc).IsModified = true;
+            _context.Entry(project).Property(p => p.Description).IsModified = true;
             _context.Entry(project).Property(p => p.AvatarUid).IsModified = true;
         }
 

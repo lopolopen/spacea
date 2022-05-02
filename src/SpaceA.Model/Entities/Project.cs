@@ -19,7 +19,7 @@ namespace SpaceA.Model.Entities
         public string Name { get; set; }
 
         [StringLength(256)]
-        public string Desc { get; set; }
+        public string Description { get; set; }
 
         [StringLength(32)]
         public string AvatarUid { get; set; }

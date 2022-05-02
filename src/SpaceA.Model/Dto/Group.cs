@@ -9,7 +9,7 @@ namespace SpaceA.Model.Dto
         public string AccountName { get; set; }
         public string Name { get; set; }
         public string Acronym { get; set; }
-        public string Desc { get; set; }
+        public string Description { get; set; }
         public bool Disabled { get; set; }
         public uint? LeaderId { get; set; }
         public Member Leader { get; set; }

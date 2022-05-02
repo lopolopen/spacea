@@ -24,7 +24,7 @@ namespace SpaceA.Model.Entities
         public string Xing { get; set; }
         [StringLength(2)]
         public string Ming { get; set; }
-        [StringLength(8)]
+        [StringLength(32)]
         public string AvatarUid { get; set; }
         public bool Disabled { get; set; }
         public string RefreshToken { get; set; }

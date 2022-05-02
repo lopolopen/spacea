@@ -91,7 +91,7 @@ namespace SpaceA.Repository
             .Property(p => p.Acronym)
             .IsModified = true;
             _context.Entry(group)
-            .Property(p => p.Desc)
+            .Property(p => p.Description)
             .IsModified = true;
             _context.Entry(group)
             .Property(p => p.Disabled)

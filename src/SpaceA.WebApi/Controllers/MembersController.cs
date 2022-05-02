@@ -26,20 +26,20 @@ namespace SpaceA.WebApi.Controllers
         private readonly ILogger _logger;
         private readonly IMemberRepository _memberRepository;
         private readonly ITokenService _tokenService;
-        private readonly MinioOptions _minioOptions;
+        private readonly IContentService _contentService;
 
         public MembersController(
             SpaceAContext context,
             ILogger<MembersController> logger,
             IMemberRepository memberRepository,
             ITokenService tokenService,
-            IOptions<MinioOptions> minioOptions)
+            IContentService contentService)
         {
             _context = context;
             _logger = logger;
             _memberRepository = memberRepository;
             _tokenService = tokenService;
-            _minioOptions = minioOptions.Value;
+            _contentService = contentService;
         }
 
         [HttpPost]
@@ -89,13 +89,10 @@ namespace SpaceA.WebApi.Controllers
                         .Property(m => m.AvatarUid)
                         .IsModified = true;
                     await _context.SaveChangesAsync();
-                    var opt = _minioOptions;
-                    var bucket = opt.AccessKey;
                     var filePath = $"public/members/{id}/avatar";
-                    var minio = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
                     using (var stream = file.OpenReadStream())
                     {
-                        await minio.PutObjectAsync(bucket, filePath, stream, file.Length, file.ContentType);
+                        await _contentService.UploadAsync(file, filePath);
                     }
                     await trans.CommitAsync();
                 }
@@ -131,15 +128,12 @@ namespace SpaceA.WebApi.Controllers
                 .Property(m => m.AvatarUid)
                 .IsModified = true;
             await _context.SaveChangesAsync();
-            var opt = _minioOptions;
-            var bucket = opt.AccessKey;
             var filePath = $"public/members/{id}/avatar";
-            var minio = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
             try
             {
-                await minio.RemoveObjectAsync(bucket, filePath);
+                await _contentService.RemoveAsync(filePath);
             }
-            catch (MinioException ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
             }

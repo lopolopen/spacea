@@ -11,6 +11,7 @@ using SpaceA.Repository.Interfaces;
 using Microsoft.Extensions.Configuration;
 using SpaceA.WebApi.Services.Interfaces;
 using SpaceA.Model.Mapper;
+using Microsoft.Extensions.Logging;
 
 namespace SpaceA.WebApi.Controllers
 {
@@ -19,32 +20,38 @@ namespace SpaceA.WebApi.Controllers
     public class AttachmentsController : ControllerBase
     {
         private readonly SpaceAContext _context;
+        private readonly ILogger _logger;
         private readonly Lazy<Member> _me;
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly IMemberRepository _memberRepository;
-        private readonly string _resourceRoot;
+        //private readonly string _resourceRoot;
+        private readonly IContentService _contentService;
 
         public AttachmentsController(
             SpaceAContext context,
+            ILogger<AttachmentsController> logger,
             ITokenService tokenService,
             IAttachmentRepository attachmentRepository,
             IMemberRepository memberRepository,
+            IContentService contentService,
             IConfiguration configuration)
         {
             _context = context;
+            _logger = logger;
             _me = new Lazy<Member>(() => tokenService.GetMember(User));
             _attachmentRepository = attachmentRepository;
+            _contentService = contentService;
             _memberRepository = memberRepository;
-            _resourceRoot = configuration["ResourceRoot"];
+            //_resourceRoot = configuration["ResourceRoot"];
         }
 
         [HttpPost("upload")]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
-
             var id = Guid.NewGuid();
-            string dirPath = Path.Combine(_resourceRoot, id.ToString());
-            string filePath = Path.Combine(dirPath, file.FileName);
+            //string dirPath = Path.Combine(_resourceRoot, id.ToString());
+            //string filePath = Path.Combine(dirPath, file.FileName);
+            var filePath = $"attachments/{id}/{file.FileName}";
             var now = DateTime.Now;
             var attachment = new Attachment
             {
@@ -59,17 +66,21 @@ namespace SpaceA.WebApi.Controllers
                 try
                 {
                     _attachmentRepository.Add(attachment);
-                    Directory.CreateDirectory(dirPath);
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(fs);
-                        await fs.FlushAsync();
-                    }
+                    await _context.SaveChangesAsync();
+                    //Directory.CreateDirectory(dirPath);
+                    //using (var fs = new FileStream(filePath, FileMode.Create))
+                    //{
+                    //    await file.CopyToAsync(fs);
+                    //    await fs.FlushAsync();
+                    //}
+                    await _contentService.UploadAsync(file, filePath);
                     await trans.CommitAsync();
                 }
-                catch
+                catch (Exception ex)
                 {
                     await trans.RollbackAsync();
+                    _logger.LogError(ex.Message);
+                    throw ex;
                 }
             }
             var me = await _memberRepository.GetAsync(_me.Value.Id);
@@ -84,19 +95,28 @@ namespace SpaceA.WebApi.Controllers
         }
 
         [HttpGet("{id}/download")]
-        public IActionResult DownloadFile(Guid id, string fileName)
+        public async Task<IActionResult> DownloadFile(Guid id, string fileName)
         {
-            string filePath = Path.Combine(_resourceRoot, id.ToString(), fileName);
-            if (System.IO.File.Exists(filePath))
+            if (fileName == null)
             {
-                var fileProvider = new FileExtensionContentTypeProvider();
-                fileProvider.TryGetContentType(fileName, out var contentType);
-                return PhysicalFile(filePath, contentType, fileName);
+                //_attachmentRepository
             }
-            else
-            {
-                return NotFound();
-            }
+            //string filePath = Path.Combine(_resourceRoot, id.ToString(), fileName);
+            //if (System.IO.File.Exists(filePath))
+            //{
+            //    var fileProvider = new FileExtensionContentTypeProvider();
+            //    fileProvider.TryGetContentType(fileName, out var contentType);
+            //    return PhysicalFile(filePath, contentType, fileName);
+            //}
+            //else
+            //{
+            //    return NotFound();
+            //}
+            var filePath = $"attachments/{id}/{fileName}";
+            var stream = await _contentService.DownloadAsync(filePath);
+            var fileProvider = new FileExtensionContentTypeProvider();
+            fileProvider.TryGetContentType(fileName, out var contentType);
+            return new FileStreamResult(stream, "application/octet-stream");
         }
 
         [HttpPut("{id}/attachto/{workItemId}")]

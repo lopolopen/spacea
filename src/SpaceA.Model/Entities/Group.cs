@@ -17,7 +17,7 @@ namespace SpaceA.Model.Entities
         [StringLength(4)]
         public string Acronym { get; set; }
         [StringLength(256)]
-        public string Desc { get; set; }
+        public string Description { get; set; }
         public bool Disabled { get; set; }
         public uint? LeaderId { get; set; }
         public virtual Member Leader { get; set; }

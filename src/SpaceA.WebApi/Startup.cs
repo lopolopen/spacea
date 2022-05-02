@@ -144,6 +144,7 @@ namespace SpaceA.WebApi
             });
 
             services.Configure<MinioOptions>(Configuration.GetSection(MinioOptions.PREFIX));
+            services.Configure<LdapOptions>(Configuration.GetSection(LdapOptions.PREFIX));
 
             services.AddDataProtection();
 
