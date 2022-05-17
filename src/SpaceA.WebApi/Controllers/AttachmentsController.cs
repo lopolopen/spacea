@@ -24,7 +24,6 @@ namespace SpaceA.WebApi.Controllers
         private readonly Lazy<Member> _me;
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly IMemberRepository _memberRepository;
-        //private readonly string _resourceRoot;
         private readonly IContentService _contentService;
 
         public AttachmentsController(
@@ -42,7 +41,6 @@ namespace SpaceA.WebApi.Controllers
             _attachmentRepository = attachmentRepository;
             _contentService = contentService;
             _memberRepository = memberRepository;
-            //_resourceRoot = configuration["ResourceRoot"];
         }
 
         [HttpPost("upload")]
@@ -95,23 +93,12 @@ namespace SpaceA.WebApi.Controllers
         }
 
         [HttpGet("{id}/download")]
-        public async Task<IActionResult> DownloadFile(Guid id, string fileName)
+        public async Task<IActionResult> DownloadFile(Guid id, string fileName = default)
         {
             if (fileName == null)
             {
                 //_attachmentRepository
             }
-            //string filePath = Path.Combine(_resourceRoot, id.ToString(), fileName);
-            //if (System.IO.File.Exists(filePath))
-            //{
-            //    var fileProvider = new FileExtensionContentTypeProvider();
-            //    fileProvider.TryGetContentType(fileName, out var contentType);
-            //    return PhysicalFile(filePath, contentType, fileName);
-            //}
-            //else
-            //{
-            //    return NotFound();
-            //}
             var filePath = $"attachments/{id}/{fileName}";
             var stream = await _contentService.DownloadAsync(filePath);
             var fileProvider = new FileExtensionContentTypeProvider();
@@ -131,6 +118,18 @@ namespace SpaceA.WebApi.Controllers
         {
             await _attachmentRepository.UpdateWorkItemIdAsync(id, null);
             return Ok();
+        }
+
+        [HttpPost("{id}/preview")]
+        public async Task<IActionResult> PreviewFile(Guid id, string fileName = default)
+        {
+            if (fileName == null)
+            {
+                //_attachmentRepository
+            }
+            var filePath = $"attachments/{id}/{fileName}";
+            var url = await _contentService.PreviewAsync(filePath, 600);
+            return Ok(url);
         }
     }
 }

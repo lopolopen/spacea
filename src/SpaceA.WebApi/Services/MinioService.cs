@@ -26,6 +26,18 @@ namespace SpaceA.WebApi.Services
             _minioOptions = minioOptions.Value;
         }
 
+        public async Task<string> PreviewAsync(string targetPath, int expiresSeconds, CancellationToken token = default)
+        {
+            if (targetPath == null)
+            {
+                throw new ArgumentNullException(nameof(targetPath));
+            }
+            var opt = _minioOptions;
+            var minioClient = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
+            var url = await minioClient.PresignedGetObjectAsync(opt.Bucket, targetPath, expiresSeconds);
+            return url;
+        }
+
         public async Task UploadAsync(IFormFile file, string targetPath, CancellationToken token = default)
         {
             if (file == null)
@@ -46,24 +58,19 @@ namespace SpaceA.WebApi.Services
 
         public async Task<Stream> DownloadAsync(string targetPath, CancellationToken token = default)
         {
+            if (targetPath == null)
+            {
+                throw new ArgumentNullException(nameof(targetPath));
+            }
             var opt = _minioOptions;
             var minioClient = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
-            //var tcs = new TaskCompletionSource<Stream>();
             var responseStream = new MemoryStream();
-            try
+            await minioClient.GetObjectAsync(opt.Bucket, targetPath, stream =>
             {
-                await minioClient.GetObjectAsync(opt.Bucket, targetPath, stream =>
-                {
-                    stream.CopyTo(responseStream);
-                    responseStream.Position = 0;
-                    responseStream.SetLength(stream.Length);
-                },
-                cancellationToken: token);
-            }
-            catch (Exception ex)
-            {
-                //tcs.SetException(ex);
-            }
+                stream.CopyTo(responseStream);
+                responseStream.Position = 0;
+            },
+            cancellationToken: token);
             return responseStream;
         }
 
