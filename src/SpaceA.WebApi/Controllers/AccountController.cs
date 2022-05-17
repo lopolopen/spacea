@@ -50,12 +50,7 @@ namespace SpaceA.WebApi.Controllers
         {
             var accountName = signIn.AccountName;
             var password = signIn.Password;
-            return await SignInLocalAsync(accountName, password);
-        }
-
-        [Authorize]
-        private async Task<IActionResult> SignInLocalAsync(string accountName, string password)
-        {
+            
             if (string.IsNullOrEmpty(accountName) || string.IsNullOrEmpty(password))
             {
                 return BadRequest();

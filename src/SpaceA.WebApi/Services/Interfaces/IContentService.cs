@@ -15,5 +15,7 @@ namespace SpaceA.WebApi.Services.Interfaces
         Task<Stream> DownloadAsync(string targetPath, CancellationToken token = default);
 
         Task RemoveAsync(string targetPath);
+
+        Task<string> PreviewAsync(string targetPath, int expiresSeconds, CancellationToken token = default);
     }
 }
