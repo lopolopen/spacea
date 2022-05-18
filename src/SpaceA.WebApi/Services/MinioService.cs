@@ -35,6 +35,12 @@ namespace SpaceA.WebApi.Services
             var opt = _minioOptions;
             var minioClient = new MinioClient(opt.Endpoint, opt.AccessKey, opt.SecretKey);
             var url = await minioClient.PresignedGetObjectAsync(opt.Bucket, targetPath, expiresSeconds);
+            _logger.LogDebug(url);
+            if (!string.IsNullOrEmpty(opt.EndpointOverwrite))
+            {
+                url = url.Replace(opt.Endpoint, opt.EndpointOverwrite);
+            }
+            _logger.LogDebug(url);
             return url;
         }
 
